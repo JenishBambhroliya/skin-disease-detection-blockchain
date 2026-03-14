@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Skin Disease Platform{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="nav-logo">
+                <i class="fa-solid fa-microscope icon-gradient"></i> SkinGuard AI
+            </a>
+            <div class="nav-links">
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}" class="nav-btn"><i class="fa-solid fa-home"></i> Dashboard</a>
+                    <a href="{{ url_for('upload_image') }}" class="nav-btn primary-btn"><i class="fa-solid fa-upload"></i> Upload</a>
+                    <a href="{{ url_for('history') }}" class="nav-btn"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+                    {% if session.get('role') == 'admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-btn" style="border-left: 1px solid rgba(255,255,255,0.1); margin-left: 0.5rem; padding-left: 1rem;"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="nav-btn danger-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-btn">Login</a>
+                    <a href="{{ url_for('register') }}" class="nav-btn primary-btn">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 SkinGuard AI | Secured by Ethereum Blockchain & IPFS</p>
+    </footer>
+</body>
+</html>

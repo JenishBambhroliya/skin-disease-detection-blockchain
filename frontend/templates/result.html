@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Analysis Result - SkinGuard AI{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2>Analysis Complete</h2>
+        <p style="color: var(--text-muted);">Image ID: #{{ record.image_id }} | Uploaded: {{ record.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="nav-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<div class="result-grid">
+    <!-- Image Display -->
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-image" style="color: var(--accent-blue);"></i> Original Image</h3>
+        <!-- Loads dynamically decrypted image just for viewing -->
+        <img src="{{ url_for('image_preview', image_id=record.image_id) }}" alt="Skin Lesion" class="result-image">
+    </div>
+
+    <!-- Prediction Info -->
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-stethoscope" style="color: var(--accent-purple);"></i> AI Diagnostic</h3>
+        
+        {% if prediction %}
+            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid var(--accent-purple); padding: 1.5rem; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
+                <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Predicted Classification</h4>
+                <h2 class="icon-gradient" style="font-size: 1.8rem; margin: 0.5rem 0;">{{ prediction.predicted_class }}</h2>
+                
+                <div style="margin-top: 1rem;">
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Confidence:</span>
+                    <strong style="color: var(--text-main); font-size: 1.2rem;">{{ "%.2f"|format(prediction.confidence_score * 100) }}%</strong>
+                </div>
+                
+                <!-- Simple progress bar layout -->
+                <div style="width: 100%; background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; margin-top: 0.5rem; overflow: hidden;">
+                    <div style="width: {{ prediction.confidence_score * 100 }}%; height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));"></div>
+                </div>
+                
+                <!-- Description -->
+                <div style="margin-top: 1.5rem; text-align: left; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+                    <h5 style="color: var(--text-main); margin-bottom: 0.5rem; font-size: 0.95rem;">Medical Overview</h5>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">{{ prediction.description }}</p>
+                </div>
+            </div>
+            
+            <p style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-circle-info"></i> Note: This prediction is for informational purposes only. Consult a dermatologist for certified medical advice.</p>
+
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i> Model is currently not trained. Prediction unavailable.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Blockchain and Cryptographic Proofs -->
+<div class="glass-card" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3><i class="fa-brands fa-ethereum" style="color: #627eea;"></i> Cryptographic Provenance</h3>
+        <a href="{{ url_for('verify_image', image_id=record.image_id) }}" class="nav-btn primary-btn" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
+            <i class="fa-solid fa-shield-check"></i> Run Verification
+        </a>
+    </div>
+
+    <div class="dashboard-grid" style="margin-top: 0;">
+        <div class="info-block">
+            <h4>SHA-256 Hash</h4>
+            <p style="font-size: 0.8rem; letter-spacing: 1px; color: var(--text-main);">{{ record.sha256_hash }}</p>
+        </div>
+        
+        <div class="info-block">
+            <h4>IPFS Content Identifier (CID)</h4>
+            {% if record.ipfs_cid %}
+                <p style="font-size: 0.8rem; color: var(--text-main);"><a href="{{ url_for('ipfs_gateway', cid=record.ipfs_cid) }}" target="_blank" style="color: var(--accent-blue);"><i class="fa-solid fa-arrow-up-right-from-square"></i> {{ record.ipfs_cid }}</a></p>
+            {% else %}
+                <p style="font-size: 0.85rem; color: var(--warning);">IPFS node unreachable during upload.</p>
+            {% endif %}
+        </div>
+        
+        <div class="info-block">
+            <h4>Blockchain Transaction Hash</h4>
+            {% if blockchain and blockchain.transaction_hash %}
+                <p style="font-size: 0.8rem; color: var(--text-main);">{{ blockchain.transaction_hash }} <span class="badge badge-success" style="margin-left: 0.5rem;">Success</span></p>
+            {% else %}
+                <p style="font-size: 0.85rem; color: var(--warning);">Blockchain network unreachable. Local backup only.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - SkinGuard AI{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-top: 2rem; border-left: 4px solid var(--danger);">
+    <h2><i class="fa-solid fa-user-shield"></i> Administration Console</h2>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">System overview and management interface.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="glass-card" style="text-align: center;">
+        <i class="fa-solid fa-users" style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom: 1rem;"></i>
+        <h3>Total Users</h3>
+        <h1 style="font-size: 3rem; margin: 0.5rem 0;">{{ u_count }}</h1>
+        <a href="{{ url_for('admin_users') }}" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-size: 0.9rem;">View Users API <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+    </div>
+
+    <div class="glass-card" style="text-align: center;">
+        <i class="fa-solid fa-images" style="font-size: 2.5rem; color: var(--accent-purple); margin-bottom: 1rem;"></i>
+        <h3>Processed Images</h3>
+        <h1 style="font-size: 3rem; margin: 0.5rem 0;">{{ i_count }}</h1>
+        <a href="{{ url_for('admin_images') }}" target="_blank" style="color: var(--accent-purple); text-decoration: none; font-size: 0.9rem;">View Images API <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+    </div>
+    
+    <div class="glass-card">
+        <h3>System Status</h3>
+        <ul style="list-style: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+            <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                <span><i class="fa-solid fa-server"></i> Web Application</span>
+                <span class="badge badge-success">Online</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                <span><i class="fa-brands fa-ethereum"></i> Local Blockchain (RPC)</span>
+                <span class="badge badge-warning">Verify Node</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                <span><i class="fa-solid fa-network-wired"></i> IPFS Storage Node</span>
+                <span class="badge badge-warning">Verify Node</span>
+            </li>
+             <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                <span><i class="fa-solid fa-brain"></i> AI Model Service</span>
+                <span class="badge badge-warning">Verify Weights</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="glass-card" style="margin-top: 2rem;">
+    <h3><i class="fa-solid fa-users-gear" style="color: var(--accent-blue);"></i> User Management</h3>
+    <div style="overflow-x: auto; margin-top: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--glass-border);">
+                    <th style="padding: 1rem; color: var(--text-muted);">ID</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Username</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Email</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Role</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Registered</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem;">{{ u.user_id }}</td>
+                    <td style="padding: 1rem;"><strong>{{ u.username }}</strong></td>
+                    <td style="padding: 1rem;">{{ u.email }}</td>
+                    <td style="padding: 1rem;">
+                        {% if u.role == 'admin' %}
+                            <span class="badge badge-success"><i class="fa-solid fa-user-shield"></i> Admin</span>
+                        {% else %}
+                            <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted);"><i class="fa-solid fa-user"></i> User</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td style="padding: 1rem;">
+                        {% if u.user_id == session.get('user_id') %}
+                            <span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">Current User (You)</span>
+                        {% elif u.role == 'admin' %}
+                            <form action="{{ url_for('demote_user', user_id=u.user_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="nav-btn danger-btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Revoke</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('promote_user', user_id=u.user_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="nav-btn primary-btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Make Admin</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

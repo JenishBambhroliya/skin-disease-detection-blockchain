@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Integrity - SkinGuard AI{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2>Zero-Knowledge Verification</h2>
+        <p style="color: var(--text-muted);">Cryptographically verifying the integrity of Image #{{ record.image_id }}.</p>
+    </div>
+    <a href="{{ url_for('result', image_id=record.image_id) }}" class="nav-btn"><i class="fa-solid fa-arrow-left"></i> Back to Result</a>
+</div>
+
+<div class="dashboard-grid">
+    <div class="glass-card">
+        <h3><i class="fa-solid fa-database" style="color: var(--accent-blue);"></i> Local State computation</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 1rem 0;">Decrypted image payload from secure storage and dynamically recomputed SHA-256 integrity hash.</p>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; word-break: break-all; color: var(--accent-blue);">
+            > hash("{{ record.encrypted_path }}.decrypted")<br>
+            <span style="color: #fff;">{{ recomputed_hash }}</span>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <h3><i class="fa-brands fa-ethereum" style="color: #627eea;"></i> Ethereum Mainnet State</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 1rem 0;">Queried immutable smart contract for the original hash anchored during upload.</p>
+        
+        {% if bc_data %}
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; word-break: break-all; color: #627eea;">
+                > contract.getRecord({{ record.image_id }})<br>
+                <span style="color: #fff;">{{ bc_hash }}</span>
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-muted);">Block Timestamp: {{ bc_data.timestamp }}</p>
+        {% else %}
+            <div class="alert alert-warning" style="margin-top: 1rem;">
+                Contract not deployed or network unreachable.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="glass-card" style="margin-top: 2rem; text-align: center;">
+    {% if not bc_data %}
+        <div style="padding: 2rem;">
+             <i class="fa-solid fa-circle-xmark" style="font-size: 4rem; color: var(--danger); margin-bottom: 1rem;"></i>
+             <h2>Verification Unavailable</h2>
+             <p style="color: var(--text-muted);">Could not fetch blockchain state to compare. Ensure Ganache is running and contract is deployed.</p>
+        </div>
+    {% elif tampered %}
+        <div style="padding: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); border-radius: 8px;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 4rem; color: var(--danger); margin-bottom: 1rem;"></i>
+            <h2 style="color: var(--danger);">INTEGRITY COMPROMISED</h2>
+            <p style="color: var(--text-main); margin-top: 1rem;">The system has detected that the local encrypted image file has been modified or tampered with since upload. The computed hash does not match the immutable blockchain record.</p>
+        </div>
+    {% else %}
+         <div style="padding: 2rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 8px;">
+            <i class="fa-solid fa-shield-check" style="font-size: 4rem; color: var(--success); margin-bottom: 1rem;"></i>
+            <h2 style="color: var(--success);">100% VERIFIED AUTHENTIC</h2>
+            <p style="color: var(--text-main); margin-top: 1rem;">The cryptographic hash of the stored image matches identically with the Ethereum blockchain record. The data has not been altered.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

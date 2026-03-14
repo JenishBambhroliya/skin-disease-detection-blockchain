@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - SkinGuard AI{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-top: 2rem;">
+    <h2>Welcome back, <span class="icon-gradient">{{ session.get('username') }}</span>!</h2>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">Secure AI Skin Disease Analysis Platform powered by Web3 technologies.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="glass-card" style="text-align: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <i class="fa-solid fa-cloud-arrow-up icon-gradient" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <h3>Analyze New Image</h3>
+        <p style="color: var(--text-muted); margin: 1rem 0;">Upload a skin lesion image for AI analysis and secure blockchain storage.</p>
+        <a href="{{ url_for('upload_image') }}" class="nav-btn primary-btn" style="display: inline-flex; justify-content: center; width: 100%;">Start Analysis</a>
+    </div>
+
+    <div class="glass-card" style="text-align: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <i class="fa-solid fa-clock-rotate-left" style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-purple);"></i>
+        <h3>View History</h3>
+        <p style="color: var(--text-muted); margin: 1rem 0;">Access your past predictions, encrypted image links, and blockchain proofs.</p>
+        <a href="{{ url_for('history') }}" class="nav-btn" style="border: 1px solid var(--accent-purple); color: var(--text-main); display: inline-flex; justify-content: center; width: 100%;">View Records</a>
+    </div>
+    
+    <div class="glass-card" style="text-align: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; margin-bottom: 1rem; color: var(--success);"></i>
+        <h3>Blockchain Integrity</h3>
+        <p style="color: var(--text-muted); margin: 1rem 0;">Your data is hashed, encrypted, and backed by immutable ledger records.</p>
+        <div class="badge badge-success" style="display: inline-block;"><i class="fa-solid fa-check"></i> System Secured</div>
+    </div>
+</div>
+{% endblock %}

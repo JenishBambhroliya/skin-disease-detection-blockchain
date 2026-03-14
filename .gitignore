@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment
+.env
+venv/
+env/
+ENV/
+
+# Database
+*.sqlite3
+*.db
+!database/skin_detection.db
+
+# Flask
+instance/
+.webassets-cache
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# AI / ML Models
+trained_models/*
+!trained_models/.gitkeep
+model/eval_outputs/*
+!model/eval_outputs/.gitkeep
+
+# Dataset (too large for GitHub)
+dataset/HAM10000_images_part_2/
+dataset/HAM10000_metadata.csv
+!dataset/.gitkeep
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# IPFS Local Storage
+storage/ipfs_local/*
+!storage/ipfs_local/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Node modules (if any)
+node_modules/
+
+# Test outputs
+test_output/
+*.log
